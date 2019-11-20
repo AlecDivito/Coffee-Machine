@@ -1,9 +1,101 @@
 <!DOCTYPE html>
 <html>
-    <head>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+</head>
+<body>
+    <h1>Coffee Brewer</h1>
 
-    </head>
-    <body>
-        <h1>It works</h1>
-    </body>
+    <div>
+        <h3>Coffee Facts</h3>
+        <strong>Power:</strong><span id="power"></span>
+        <pre id="state"></pre>
+    </div>
+
+    <button id="coffee_power_button">Start Coffee Machine</button>
+    <div>
+        <button id="coffee_add_water_button">Add Water</button>
+        <input type="number" value="0" id="coffee_water_amount" min="0" max="1000" />
+    </div>
+    <div>
+        <button id="coffee_add_grounds_button">Add Coffee Grounds</button>
+        <input type="number" value="0" id="coffee_grounds_amount" min="0" max="250" />
+    </div>
+    <button id="brew_coffee_button">Start Brewing</button>
+    <div>
+        <button id="pour_coffee_button">Pour Coffee</button>
+        <input type="number" value="0" id="pour_coffee_amount" min="0" max="2000" />
+    </div>
+    
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+    <script>
+        window.addEventListener("DOMContentLoaded", (e) => {
+            
+            // define constrants
+            const socket = io("http://localhost:3000");
+            const power = document.getElementById("power");
+            const state = document.getElementById("state");
+            // end define constrants
+
+            // coffee maker controls
+            const powerButton = document.getElementById("coffee_power_button");
+            const addWaterToResivour = document.getElementById("coffee_add_water_button");
+            const waterToAddToResivour = document.getElementById("coffee_water_amount");
+            const addGroundsToResivour = document.getElementById("coffee_add_grounds_button");
+            const groundsToAddToResivour = document.getElementById("coffee_grounds_amount");
+            const brewButton = document.getElementById("brew_coffee_button");
+            const pourCoffeeButton = document.getElementById("pour_coffee_button");
+            const pourCoffeeValue = document.getElementById("pour_coffee_amount");
+            // end coffee maker controls
+
+            socket.on("update", (coffeeMakerState) => {
+                console.log(coffeeMakerState);
+                state.innerText = JSON.stringify(coffeeMakerState);
+            });
+
+            socket.on("error", (message) => {
+                console.log(message);
+            })
+
+            powerButton.addEventListener('click', () => {
+                socket.emit("pushPowerButton", "");
+            });
+
+            addWaterToResivour.addEventListener('click', () => {
+                const water = Number(waterToAddToResivour.value);
+                if (water < 0 || water > 1000) {
+                    alert("Can only add between 0 and 1000ml at a time");
+                } else {
+                    socket.emit("addWater", water);
+                }
+            });
+
+            addGroundsToResivour.addEventListener('click', () => {
+                const grounds = Number(groundsToAddToResivour.value);
+                if (grounds < 0 || grounds > 250) {
+                    alert("Can only add between 0 and 250g at a time");
+                } else {
+                    socket.emit("addCoffeeGrounds", grounds);
+                }
+            });
+
+            brewButton.addEventListener('click', () => {
+                socket.emit("pushBrewButton", "");
+            });
+
+            pourCoffeeButton.addEventListener('click', () => {
+                if (pourCoffeeValue.value < 0 || pourCoffeeValue > 2000) {
+                    alert("Can only add between 0 and 2000ml at a time!");
+                } else {
+                    socket.emit('pourCoffee')
+                }
+            });
+        });
+    </script>
+</body>
 </html>
