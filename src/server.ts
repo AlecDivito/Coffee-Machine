@@ -11,7 +11,7 @@ const network = require("http").Server(app);
 const io = require("socket.io")(network);
 
 app.get("/", (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, "view/index.html"));
+    res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
 io.on("connection", (socket: Socket) => {
