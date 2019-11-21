@@ -95,12 +95,24 @@ export default class CoffeeMaker {
     public machineState(): any {
         return {
             power: this.powerButton.toString(),
-            water: this.waterReservoir.toString(),
-            grounds: this.coffeeGroundsReservoir.toString(),
             brewing: this.brewButton.toString(),
+            water: {
+                string: this.waterReservoir.toString(),
+                max: this.waterReservoir.getMaxCapacity(),
+                cur: this.waterReservoir.getCurrentLoad(),
+            },
+            grounds: {
+                string: this.coffeeGroundsReservoir.toString(),
+                max: this.coffeeGroundsReservoir.getMaxCapacity(),
+                cur: this.coffeeGroundsReservoir.getCurrentLoad(),
+            },
             boiler: this.boiler.toString(),
             coffeePotWarmer: this.coffeePotWarmer.toString(),
-            coffeePot: this.coffeePot.toString(),
+            coffeePot: {
+                string: this.coffeePot.toString(),
+                max: this.coffeePot.getMaxCapacity(),
+                cur: this.coffeePot.coffeedBrewed(),
+            },
         };
     }
 }

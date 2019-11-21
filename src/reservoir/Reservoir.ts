@@ -33,5 +33,13 @@ export default abstract class Reservoir<T extends number> {
         return materialWanted;
     }
 
+    public getCurrentLoad(): T {
+        return (Math.round(this.currentLoad * 100) / 100) as T;
+    }
+
+    public getMaxCapacity(): T {
+        return this.maxCapacity;
+    }
+
     public abstract toString(): string;
 }

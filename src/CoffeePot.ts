@@ -16,9 +16,10 @@ export default class CoffeePot {
     }
 
     public makeCoffee(water: WaterReservoir, grounds: CoffeeGroundsReservoir): void {
-        water.take(Math.round(Math.random() * 15 + 5));
-        grounds.take(Math.round(Math.random() * 8 + 2));
-        const newCoffee = Math.round(Math.random() * 5 + 1) as Milliliter;
+        const waterTake = Math.round(Math.random() * 10 + 5);
+        water.take(waterTake);
+        grounds.take(Math.round(Math.random() * 5 + 2));
+        const newCoffee = waterTake as Milliliter;
         if (newCoffee + this.coffee > this.maxCapacity) {
             throw new Error("Coffee can't fit into the pot!");
         }
@@ -41,10 +42,14 @@ export default class CoffeePot {
     }
 
     public coffeedBrewed(): Milliliter {
-        return this.coffee;
+        return (Math.round(this.coffee * 100) / 100);
+    }
+
+    public getMaxCapacity(): Milliliter {
+        return this.maxCapacity;
     }
 
     public toString(): string {
-        return `${this.coffee}ml at ${this.temperature} F`;
+        return `${this.coffee}ml/${this.maxCapacity}ml`;
     }
 }

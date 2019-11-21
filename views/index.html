@@ -4,58 +4,126 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" type="text/css" href="main.css" />
     <title>Document</title>
 </head>
 <body>
-    <h1>Coffee Brewer</h1>
+    <header class="header">
+        <h1 class="container">Coffee Brewer</h1>
+    </header>
 
-    <div>
-        <h3>Coffee Facts</h3>
-        <strong>Power:</strong><span id="power"></span>
-        <pre id="state"></pre>
-    </div>
+    <div class="content container">
+        <div class="machine">
+            <h3>Coffee Panel</h3>
+            
+            <div class="machine__maker">
+                <div class="machine__maker__tracker">
+                    <canvas width="100" height="250" id="canvas_reservoir_water" class="machine__maker__reservoir"></canvas>
+                    <button id="coffee_add_water_button">Add Water</button>
+                    <input type="number" value="0" id="coffee_water_amount" min="0" max="1000" />
+                </div>
+                <div class="machine__maker__tracker">
+                    <canvas width="100" height="250" id="canvas_reservoir_grounds" class="machine__maker__reservoir"></canvas>
+                    <button id="coffee_add_grounds_button">Add Coffee Grounds</button>
+                    <input type="number" value="0" id="coffee_grounds_amount" min="0" max="250" />
+                </div>
+                <div class="machine__maker__tracker">
+                    <canvas width="100" height="250" id="canvas_reservoir_coffee" class="machine__maker__reservoir"></canvas>
+                    <button id="pour_coffee_button">Pour Coffee</button>
+                    <input type="number" value="0" id="pour_coffee_amount" min="0" max="2000" />
+                </div>
+            </div>
 
-    <button id="coffee_power_button">Start Coffee Machine</button>
-    <div>
-        <button id="coffee_add_water_button">Add Water</button>
-        <input type="number" value="0" id="coffee_water_amount" min="0" max="1000" />
-    </div>
-    <div>
-        <button id="coffee_add_grounds_button">Add Coffee Grounds</button>
-        <input type="number" value="0" id="coffee_grounds_amount" min="0" max="250" />
-    </div>
-    <button id="brew_coffee_button">Start Brewing</button>
-    <div>
-        <button id="pour_coffee_button">Pour Coffee</button>
-        <input type="number" value="0" id="pour_coffee_amount" min="0" max="2000" />
-    </div>
+            <div class="machine__control-panel">
+                <div class="machine__btn--wrapper">
+                    <span class="machine__btn__text" id="power__button">OFF</span>
+                    <h3 class="machine__btn__title">Power</h3>
+                </div>
+                <div class="machine__status-screen">
+                    <span class="machine__status" id="screen__water">Water: 0ML / 1000 ML</span>
+                    <span class="machine__status" id="screen__grounds">Grounds: 0ML / 250 ML</span>
+                    <span class="machine__status" id="screen__coffee">Coffee: 0 ML</span>
+                    <span class="machine__status" id="screen__boiler">Boiler: 0 F</span>
+                    <span class="machine__status" id="screen__coffee__temp">Temperature: 0 F</span>
+                </div>
+                <div class="machine__btn--wrapper">
+                    <span class="machine__btn__text" id="brew__button">OFF</span>
+                    <h3 class="machine__btn__title">Brew</h3>
+                </div>
+            </div>
+        </div>
     
+
+        <div class="errors">
+        </div>
+    </div>
     
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
     <script>
         window.addEventListener("DOMContentLoaded", (e) => {
-            
             // define constrants
             const socket = io("http://localhost:3000");
-            const power = document.getElementById("power");
-            const state = document.getElementById("state");
             // end define constrants
 
+            // coffee maker text
+            const waterText = document.getElementById("screen__water");
+            const groundsText = document.getElementById("screen__grounds");
+            const boilerText = document.getElementById("screen__boiler");
+            const coffeeText = document.getElementById("screen__coffee");
+            const coffeeTempText = document.getElementById("screen__coffee__temp");
+            // end coffee maker text
+
             // coffee maker controls
-            const powerButton = document.getElementById("coffee_power_button");
+            const powerButton = document.getElementById("power__button");
+            const brewButton = document.getElementById("brew__button");
+
             const addWaterToResivour = document.getElementById("coffee_add_water_button");
             const waterToAddToResivour = document.getElementById("coffee_water_amount");
             const addGroundsToResivour = document.getElementById("coffee_add_grounds_button");
             const groundsToAddToResivour = document.getElementById("coffee_grounds_amount");
-            const brewButton = document.getElementById("brew_coffee_button");
             const pourCoffeeButton = document.getElementById("pour_coffee_button");
             const pourCoffeeValue = document.getElementById("pour_coffee_amount");
             // end coffee maker controls
 
+            // canvas
+            const reservoirWater = document.getElementById("canvas_reservoir_water");
+            const reservoirGrounds = document.getElementById("canvas_reservoir_grounds");
+            const reservoirCoffee = document.getElementById("canvas_reservoir_coffee");
+            // end canvas
+
             socket.on("update", (coffeeMakerState) => {
                 console.log(coffeeMakerState);
-                state.innerText = JSON.stringify(coffeeMakerState);
+                if (waterText.innerText !== `Water: ${coffeeMakerState.water.string}`) {
+                    waterText.innerText = `Water: ${coffeeMakerState.water.string}`;
+                }
+                if (groundsText.innerText !== `Grounds: ${coffeeMakerState.grounds.string}`) {
+                    groundsText.innerText = `Grounds: ${coffeeMakerState.grounds.string}`;
+                }
+                if (boilerText.innerText !== `Boiler Temp: ${coffeeMakerState.boiler}`) {
+                    boilerText.innerText = `Boiler Temp: ${coffeeMakerState.boiler}`;
+                }
+                if (coffeeText.innerText !== `Coffee: ${coffeeMakerState.coffeePot.string}`) {
+                    coffeeText.innerText = `Coffee: ${coffeeMakerState.coffeePot.string}`
+                }
+                if (coffeeTempText.innerText !== `Warm Plate Temp: ${coffeeMakerState.coffeePotWarmer}`) {
+                    coffeeTempText.innerText = `Warm Plate Temp: ${coffeeMakerState.coffeePotWarmer}`;
+                }
+
+                powerButton.innerText = coffeeMakerState.power || "OFF";
+                if (coffeeMakerState.power === "ON") {
+                    powerButton.style.backgroundColor = "#00FF00";
+                } else {
+                    powerButton.style.backgroundColor = "#FF0000";
+                }
+
+                brewButton.innerText = coffeeMakerState.brewing || "OFF";
+                if (coffeeMakerState.brewing === "ON") {
+                    brewButton.style.backgroundColor = "#00FF00";
+                } else {
+                    brewButton.style.backgroundColor = "#FF0000";
+                }
+                draw(coffeeMakerState);
             });
 
             socket.on("error", (message) => {
@@ -92,9 +160,60 @@
                 if (pourCoffeeValue.value < 0 || pourCoffeeValue > 2000) {
                     alert("Can only add between 0 and 2000ml at a time!");
                 } else {
-                    socket.emit('pourCoffee')
+                    socket.emit('pourCoffee', pourCoffeeValue.value)
                 }
             });
+        
+            function draw(coffeeState) {
+                const drawable = [ reservoirWater, reservoirGrounds, reservoirCoffee];
+                for (const canvas of drawable) {
+                    const color = getColor(canvas.id);
+                    const height = getHeight(canvas.id, coffeeState);
+                    const width = 100; // 100 pixels
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = color;
+                    ctx.fillRect(0, 250 - height, width, height)
+                }
+            }
+
+            function getHeight(id, coffeeState) {
+                height = 1;
+                switch (id) {
+                    case "canvas_reservoir_water":   
+                        height = (coffeeState.water.cur / coffeeState.water.max) * 250; 
+                        break;
+                    case "canvas_reservoir_grounds": 
+                        height = (coffeeState.grounds.cur / coffeeState.grounds.max) * 250;
+                        break;
+                    case "canvas_reservoir_coffee":  
+                        height = (coffeeState.coffeePot.cur / coffeeState.coffeePot.max) * 250; 
+                        break;
+                    default:
+                        height = 1;
+                        break;
+                }
+                if (height < 1) {
+                    height = 1;
+                }
+                return Math.floor(height);
+            }
+            
+            function getColor(id) {
+                switch (id) {
+                    case "canvas_reservoir_water": return "#0000FF"; 
+                    case "canvas_reservoir_grounds": return "#964b00"; 
+                    case "canvas_reservoir_coffee": return "#6F4E37"; 
+                }
+            }            
+
+            function init() {
+                const drawable = [ reservoirWater, reservoirGrounds, reservoirCoffee];
+                for( const canvas of drawable) {
+                    canvas.width = 100;
+                    canvas.height = 250;
+                }
+            }
         });
     </script>
 </body>

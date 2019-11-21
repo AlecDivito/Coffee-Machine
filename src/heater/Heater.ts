@@ -29,11 +29,11 @@ export default abstract class Heater {
     }
 
     public getTemperature(): Fahrenheit {
-        return this.sensor.sensorValue();
+        return (Math.round(this.sensor.sensorValue() * 100) / 100);
     }
 
     public toString() {
-        return `${this.sensor.sensorValue()} F`;
+        return `${this.getTemperature()} F`;
     }
 
     private heaterIsStillWarm() {

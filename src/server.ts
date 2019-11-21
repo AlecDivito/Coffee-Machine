@@ -14,6 +14,8 @@ app.get("/", (req: Request, res: Response) => {
     res.sendFile(path.join(__dirname, "../views/index.html"));
 });
 
+app.use(express.static(path.join(__dirname, "../public")));
+
 io.on("connection", (socket: Socket) => {
     console.log("A user has connected. Creating a new Coffee Maker");
     const coffeeMaker = new CoffeeMaker();
